@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Vigenere Cipher";
+}
+
+<div class="jumbotron">
+    <h1>Vigenere Cipher</h1>
+</div>
+<script type="text/javascript">
+    var app = angular.module('vigenereCipher', [])
+    app.controller('myCtrl', function ($scope, $http) {
+        $scope.CipherText = "";
+        $scope.Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        //USE ALPHABET ARRAY TO GET NUMBER VALUE OF EACH LETTER
+        var alphArray = Array.from($scope.Alphabet);
+        //CALLED FUNCTION WHENEVER KEY OR PLAIN TEXTBOX VALUE CHANGES
+        $scope.GetCipherText = function () {
+            //CLEAR CYPHER TEXT EACH TIME A TEXTBOX VALUE CHANGES SO THAT IT DOESNT REPEAT THE STRING EACH TIME WHILE APPENDING
+            $scope.CipherText = "";
+            //CHANGE TO UPPERCASE SO IT GETS THE CORRECT CHAR VALUE EACH TIME WHEN COMPARING
+            var upperCasePlain = $scope.PlainText.toUpperCase();
+            var upperCaseKey = $scope.KeyText.toUpperCase();
+
+            //USE ISHORTESTLENGTH TO ONLY ENCRYPT THE CORRECT NUMBER OF LETTERS WHEN THE VALUE CHANGES BASED ON TYPING IN THE PLAIN TEXT OR KEY TEXT BOXES 
+            var iShortestLength = 0;
+            if (upperCaseKey.length >= upperCasePlain.length) {
+                iShortestLength = upperCasePlain.length;
+            } else {
+                iShortestLength = upperCaseKey.length;
+            }
+            //FOREACH LETTER - LOOP TO GET THE CIPHER VALUE BY COMBINING THE PLAIN AND KEY VALUES
+            for (i = 0; i < iShortestLength; i++) {
+                var iCipherVal = 0;
+                var thisCharPlain = upperCasePlain[i];
+                for (iAlph = 0; iAlph < alphArray.length; iAlph++) {
+                    if (thisCharPlain == alphArray[iAlph]) {
+                        //SET THIS LETTERS PLAIN TEXT VAL
+                        iCipherVal = iAlph;
+                    }
+                }
+                var thisCharKey = upperCaseKey[i];
+                for (iAlph = 0; iAlph < alphArray.length; iAlph++) {
+                    if (thisCharKey == alphArray[iAlph]) {
+                        //GET THE CIPHER VAL FROM COMBINING THE PLAIN TEXT VAL AND THE KEY VAL
+                        iCipherVal = iCipherVal + iAlph;
+                    }
+                }
+                if (iCipherVal > 25) {
+                    //IF THE VALUE IS MORE THAN 25 THEN SUBTRACT THE 26 LETTERS TO START AGAIN AT THE LETTER A
+                    iCipherVal = iCipherVal - 26;
+                }
+                $scope.CipherText += $scope.Alphabet[iCipherVal];
+                iCipherVal = 0;
+            }
+
+        };
+    });
+</script>
+<section ng-app="vigenereCipher" ng-controller="myCtrl" class="content">
+    <div class="row">
+        <div class="col-md-4">
+            <label id="lblPlain" for="txtPlain">Plain Text: </label>
+            <input ng-change="GetCipherText()" ng-model="PlainText" type="text" id="txtPlain" />
+        </div>
+        <div class="col-md-4">
+            <label id="lblKey" for="txtKey">Key: </label>
+            <input ng-change="GetCipherText()" ng-model="KeyText" type="text" id="txtKey" />
+        </div>
+        <div class="col-md-4">
+            <label id="lblCipher" for="txtCipher">Cipher Text: </label>
+            <input disabled="disabled" ng-model="CipherText" type="text" id="txtCipher" />
+        </div>
+    </div>
+</section>
